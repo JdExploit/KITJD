@@ -260,7 +260,7 @@ x86_64-w64-mingw32-g++ -O2 -s -static -mwindows \
   -fno-exceptions -fno-rtti \
   -fno-asynchronous-unwind-tables \
   -o JDEXPLOIT_v3_PROD.exe \
-  silverghost_agent_v3.cpp \
+  silverghost_fixed.cpp \
   -lwininet -lws2_32 -ladvapi32 -lshell32 -lcrypt32 -lole32 -luuid
 
 # 5. Verify compilation
