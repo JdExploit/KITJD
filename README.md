@@ -256,12 +256,7 @@ cat > silverghost_agent_v3.cpp << 'EOF'
 EOF
 
 # 4. Compile with optimization flags
-x86_64-w64-mingw32-g++ -O2 -s -static -mwindows \
-  -fno-exceptions -fno-rtti \
-  -fno-asynchronous-unwind-tables \
-  -o JDEXPLOIT_v3_PROD.exe \
-  silverghost_fixed.cpp \
-  -lwininet -lws2_32 -ladvapi32 -lshell32 -lcrypt32 -lole32 -luuid
+x86_64-w64-mingw32-g++ -O2 -s -static -mwindows -o JDEXPLOIT_v3.exe agent_with_output.cpp -lwininet -ladvapi32 -lcrypt32
 
 # 5. Verify compilation
 file JDEXPLOIT_v3_PROD.exe
