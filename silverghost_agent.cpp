@@ -1,6 +1,6 @@
 /*
  * SilverGhost C2 Agent v3.3 - CON OUTPUT FUNCIONAL
- * Compilación: x86_64-w64-mingw32-g++ -O2 -s -static -mwindows -o JDEXPLOIT_v3.exe agent.cpp -lwininet -ladvapi32 -lcrypt32
+ * Compilación: x86_64-w64-mingw32-g++ -O2 -s -static -mwindows -o JDEXPLOIT.exe silverghost_agent.cpp -lwininet -ladvapi32 -lcrypt32
  */
 
 #define WIN32_LEAN_AND_MEAN
